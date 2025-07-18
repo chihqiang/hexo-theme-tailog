@@ -6,29 +6,17 @@
       id="inputField"
       placeholder="关键词搜索"
       class="w-full px-6 py-3 rounded-full focus:outline-none"
-      aria-label="输入框"
     />
     <div id="articleList" class="mt-4 space-y-2"></div>
   </div>
 </div>
 
 <script>
-  // 文章数组，从服务端传入数据生成
-  const articles = [
-    <% posts.each(function(post, index){ %>
-      {
-        title: "<%- post.title.replace(/"/g, '\\"') %>",
-        url: "<%= url_for(post.path) %>"
-      }<%= index < posts.length - 1 ? ',' : '' %>
-    <% }) %>
-  ];
-
   function setupInputHandler() {
     const inputField = document.getElementById("inputField");
     const articleList = document.getElementById("articleList");
     const searchOverlay = document.getElementById("searchOverlay");
     const inputContainer = document.getElementById("inputContainer");
-
     // 假设页面有一个触发按钮id为searchButton
     const searchButton = document.getElementById("searchButton");
     if (searchButton) {
@@ -40,7 +28,6 @@
         inputField.focus();
       });
     }
-
     function hideSearch() {
       inputContainer.classList.add("fade-out");
       setTimeout(() => {
@@ -49,9 +36,7 @@
         searchOverlay.classList.add("hidden");
       }, 300);
     }
-
     searchOverlay.addEventListener("click", hideSearch);
-
     // 监听 ESC 关闭搜索框和遮罩
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -60,6 +45,7 @@
     });
 
     let debounceTimer;
+    let articles =[];
     inputField.addEventListener("input", function () {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
@@ -68,10 +54,13 @@
           articleList.innerHTML = "";
           return;
         }
+        fetch('/search.json')
+        .then(res => res.json())
+        .then(data => articles = data)
+        .catch(err => console.error('load search.json err', err));
         const filteredArticles = articles
           .filter(article => article.title.toLowerCase().includes(keyword))
           .slice(0, 10);
-
         const directions = ["fromTop", "fromBottom", "fromLeft", "fromRight"];
         articleList.innerHTML =
           filteredArticles.length > 0
