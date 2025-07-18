@@ -1,47 +1,68 @@
-<!-- 炫彩导航栏 -->
 <nav class="bg-gradient-to-r from-purple-600 to-blue-500 shadow-lg">
-  <div class="container mx-auto px-4 py-3">
-    <div class="flex justify-between items-center">
-      <h1
-        class="text-white text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-400"
-      >
-      <a href="/">
-          <%= conf('title') %>
-      </a>
-      </h1>
-      <div class="hidden md:flex space-x-6">
-        <% let menu = conf('menu') %> <% for (let name in menu) { if(menu.hasOwnProperty(name)) { %>
-        <a
-          href="<%- url_for(menu[name]) %>"
-          class="text-white hover:text-yellow-200 transition duration-300 font-medium"
-          ><%= name %></a
-        >
-        <% }} %>
-      </div>
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <!-- 网站标题 -->
+    <h1 class="text-white text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-400">
+      <a href="/"><%= conf('title') %></a>
+    </h1>
 
-      <div class="relative w-64">
-        <button
-          id="searchButton"
-          class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:from-purple-700 hover:to-blue-600 rounded-full p-2 transition duration-300 shadow-md hover:shadow-lg"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-      </div>
+    <!-- 桌面端菜单 -->
+    <div class="hidden md:flex space-x-6">
+      <% let menu = conf('menu') %>
+      <% for (let name in menu) { if(menu.hasOwnProperty(name)) { %>
+        <a href="<%- url_for(menu[name]) %>" class="text-white hover:text-yellow-200 transition duration-300 font-medium">
+          <%= name %>
+        </a>
+      <% }} %>
     </div>
+
+    <!-- 移动端汉堡按钮 -->
+    <div class="md:hidden">
+      <button id="mobile-menu-button" aria-label="切换菜单" class="text-white focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 搜索按钮 -->
+    <div class="relative w-64 ml-4">
+      <button
+        id="searchButton"
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:from-purple-700 hover:to-blue-600 rounded-full p-2 transition duration-300 shadow-md hover:shadow-lg"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端菜单，默认隐藏 -->
+  <div id="mobile-menu" class="hidden md:hidden bg-gradient-to-r from-purple-600 to-blue-500 px-4 pb-4">
+    <% for (let name in menu) { if(menu.hasOwnProperty(name)) { %>
+      <a href="<%- url_for(menu[name]) %>" class="block text-white py-2 rounded hover:bg-purple-700 transition">
+        <%= name %>
+      </a>
+    <% } } %>
   </div>
 </nav>
 
 <%- partial('search', { posts: page.posts || site.posts }) %>
+
+<script>
+  document.getElementById('mobile-menu-button').addEventListener('click', function () {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  });
+</script>
