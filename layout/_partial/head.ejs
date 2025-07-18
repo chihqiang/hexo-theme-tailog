@@ -28,9 +28,7 @@
   <% if (conf("description")) { %>
     <meta name="description" content="<%= conf('description') %>">
   <% } %>
-  <% if (conf("favicon")) { %>
-    <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(conf('favicon')) %>">
-  <% } %>
+  <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(conf('favicon')) %>">
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script src="https://unpkg.com/alpinejs@3.14.9/dist/cdn.min.js" defer></script>
   <%- css('css/blog.css') %>

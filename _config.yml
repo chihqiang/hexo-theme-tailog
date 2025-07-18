@@ -10,6 +10,7 @@ menu:
 author: zhiqiang               # 博客作者名称
 email: zhiqiang2033@gmail.com # 联系邮箱
 address: 中国                  # 地址信息（显示在联系方式处）
+favicon: /img/favicon.ico
 
 # 统计服务配置（默认注释，需要启用时取消注释并填写对应ID）
 # baidu_analytics_id: YOUR_BAIDU_ID    # 百度统计ID
