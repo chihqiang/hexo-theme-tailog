@@ -1,0 +1,64 @@
+<footer class="bg-gradient-to-r from-purple-700 to-blue-600 text-white py-8 mt-auto">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+      <!-- 关于站点 -->
+      <div class="md:w-1/4">
+        <h3 class="text-xl font-semibold mb-3"><%= conf('title') %></h3>
+        <p class="text-sm opacity-80">
+          感谢您的访问！这里是 <%= conf('author') %> 专属博客，分享生活与技术。
+        </p>
+      </div>
+
+      <!-- 快捷链接 -->
+      <div class="md:w-1/4">
+        <h3 class="text-xl font-semibold mb-3">快捷导航</h3>
+        <ul class="space-y-2 text-sm opacity-90">
+          <% let menu = conf('menu'); %>
+          <% for (let name in menu) { if (menu.hasOwnProperty(name)) { %>
+            <li>
+              <a href="<%- url_for(menu[name]) %>" class="hover:text-yellow-300 transition">
+                <%= name %>
+              </a>
+            </li>
+          <% } } %>
+        </ul>
+      </div>
+
+      <!-- 友情链接 -->
+      <div class="md:w-1/4">
+        <h3 class="text-xl font-semibold mb-3">友情链接</h3>
+        <ul class="space-y-2 text-sm opacity-90">
+          <% let friends = conf('friends') || []; %>
+          <% friends.forEach(function(friend){ %>
+            <li>
+              <a href="<%- friend.url %>" target="_blank" rel="noopener" class="hover:text-yellow-300 transition">
+                <%= friend.name %>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- 联系方式 -->
+      <div class="md:w-1/4">
+        <h3 class="text-xl font-semibold mb-3">联系方式</h3>
+        <p class="text-sm opacity-80">
+          邮箱: <a href="mailto:<%= conf('email') %>" class="hover:text-yellow-300"><%= conf('email') %></a><br />
+          地址: <span><%= conf('address') %></span>
+        </p>
+      </div>
+    </div>
+
+    <hr class="my-6 border-purple-400 opacity-50" />
+
+    <p class="text-center text-sm opacity-70 mb-2">
+      © 2024 <%= conf('title') %>. 保留所有权利.
+    </p>
+
+    <!-- Hexo 和主题版权 -->
+    <p class="text-center text-xs opacity-50">
+      由 <a href="https://hexo.io/" target="_blank" rel="noopener" class="underline hover:text-yellow-300">Hexo</a> 驱动，主题由 
+      <a href="https://github.com/chihqiang/hexo-theme-tailog" target="_blank" rel="noopener" class="underline hover:text-yellow-300">hexo-theme-tailog</a> 提供。
+    </p>
+  </div>
+</footer>

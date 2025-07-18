@@ -1,0 +1,123 @@
+<div class="timeline">
+  <% 
+    // 按年月分组并降序排序
+    let postsByMonth = {};
+    site.posts.sort('-date').forEach(post => {
+      let month = post.date.format('YYYY年M月');
+      if (!postsByMonth[month]) postsByMonth[month] = [];
+      postsByMonth[month].push(post);
+    });
+    
+    // 按时间降序拿所有月份（字符串比较可行，因为格式固定）
+    let months = Object.keys(postsByMonth).sort((a,b) => b.localeCompare(a));
+  %>
+
+  <% months.forEach((month, index) => {
+    let posts = postsByMonth[month];
+    let isDefaultOpen = index < 3; // 只默认展开最近3个月
+  %>
+    <div class="month-group">
+      <button class="month-header" aria-expanded="<%= isDefaultOpen %>" aria-controls="month-<%= index %>" onclick="toggleMonth(this)">
+        <span><%= month %> (<%= posts.length %>篇)</span>
+        <span class="toggle-icon"><%= isDefaultOpen ? '▲' : '▼' %></span>
+      </button>
+      <div id="month-<%= index %>" class="month-posts" style="display: <%= isDefaultOpen ? 'block' : 'none' %>;">
+        <% posts.forEach(post => {
+          // 安全获取分类名
+          let category = '未分类';
+          if (post.categories && Array.isArray(post.categories) && post.categories.length > 0) {
+            if (post.categories[0] && typeof post.categories[0].name === 'string') {
+              category = post.categories[0].name;
+            }
+          }
+
+          // 分类颜色
+          let color = 'purple';
+          if (category.includes('设计')) color = 'blue';
+          else if (category.includes('Vue')) color = 'green';
+          else if (category.includes('技术')) color = 'purple';
+        %>
+          <div class="timeline-item">
+            <div class="timeline-content">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm text-<%= color %>-600 font-semibold"><%= category %></span>
+                <span class="text-sm text-gray-500"><%= post.date.format('YYYY-MM-DD') %></span>
+              </div>
+              <h3 class="text-xl font-bold mb-2 text-gray-800 hover:text-<%= color %>-600 transition">
+                <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+              </h3>
+              <a href="<%= url_for(post.path) %>" class="text-<%= color %>-600 hover:text-<%= color %>-800 font-medium">阅读全文 →</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<script>
+  function toggleMonth(button) {
+    const expanded = button.getAttribute('aria-expanded') === 'true';
+    const contentId = button.getAttribute('aria-controls');
+    const content = document.getElementById(contentId);
+    if (!content) return;
+
+    if (expanded) {
+      content.style.display = 'none';
+      button.setAttribute('aria-expanded', 'false');
+      button.querySelector('.toggle-icon').textContent = '▼';
+    } else {
+      content.style.display = 'block';
+      button.setAttribute('aria-expanded', 'true');
+      button.querySelector('.toggle-icon').textContent = '▲';
+    }
+  }
+</script>
+
+<style>
+  .timeline {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .month-group {
+    margin-bottom: 30px;
+    border-left: 4px solid #8b5cf6;
+    padding-left: 16px;
+  }
+  .month-header {
+    background: none;
+    border: none;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin-bottom: 12px;
+  }
+  .month-header:hover {
+    color: #8b5cf6;
+  }
+  .toggle-icon {
+    font-size: 1rem;
+    user-select: none;
+  }
+  .timeline-item {
+    margin-bottom: 20px;
+  }
+  .timeline-content {
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .timeline-content:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.15);
+  }
+</style>

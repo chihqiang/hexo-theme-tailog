@@ -1,0 +1,11 @@
+<!-- 分页控件 -->
+<% if (page.total > 1){ %>
+        <div class="container mx-auto px-4 pb-8">
+            <div class="flex justify-center space-x-2">
+            <%- paginator({
+                prev_text:  _p("prev"),
+                next_text: _p("next")
+            }) %>
+            </div>
+        </div>
+    <% } %>

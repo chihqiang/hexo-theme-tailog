@@ -1,0 +1,37 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <%
+    let baseTitle = conf('title') || '';
+    let separator = ` ${conf('separator') || '|'} `;
+    let title = baseTitle;
+
+    if (page.title) {
+      title = page.title + separator + baseTitle;
+    } else if (is_category()) {
+      title = __('Category') + ' : ' + page.category + separator + baseTitle;
+    } else if (is_tag()) {
+      title = __('Tags') + ' : ' + page.tag + separator + baseTitle;
+    } else if (is_archive()) {
+      title = __('Archives') + separator + baseTitle;
+    } else if (is_home() && conf('subtitle')) {
+      title = conf('subtitle') + separator + baseTitle;
+    }
+
+    let keywords = conf("keywords") || "";
+    if (page.tags && page.tags.length) {
+      keywords = page.tags.map(tag => tag.name).join(',');
+    }
+  %>
+  <title><%= title %></title>
+  <meta name="keywords" content="<%= keywords %>">
+  <% if (conf("description")) { %>
+    <meta name="description" content="<%= conf('description') %>">
+  <% } %>
+  <% if (conf("favicon")) { %>
+    <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(conf('favicon')) %>">
+  <% } %>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs" defer></script>
+  <%- css('css/blog.css') %>
+</head>

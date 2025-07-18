@@ -1,0 +1,17 @@
+{
+  "name": "hexo-theme-tailog",
+  "version": "0.1.0",
+  "description": "A clean and minimalist Tailwind-based Hexo theme for effortless blogging.",
+  "license": "Apache-2.0",
+  "author": "zhiqiang",
+  "keywords": [
+    "hexo",
+    "Tailwind CSS",
+    "tailog"
+  ],
+  "dependencies": {
+    "hexo-renderer-ejs": "*",
+    "hexo-renderer-marked": "*",
+    "hexo-generator-sitemap": "*"
+  }
+}
