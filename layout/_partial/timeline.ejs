@@ -1,0 +1,68 @@
+<div class="timeline max-w-4xl mx-auto px-4 py-8 space-y-8" id="timeline-container">
+  <% 
+    let postsByMonth = {};
+    site.posts.sort('-date').forEach(post => {
+      let month = post.date.format('YYYY年M月');
+      postsByMonth[month] = postsByMonth[month] || [];
+      postsByMonth[month].push(post);
+    });
+    let months = Object.keys(postsByMonth).sort((a, b) => b.localeCompare(a));
+    let colors = ['purple', 'blue', 'green', 'red', 'pink', 'indigo', 'orange', 'yellow', 'teal', 'cyan'];
+  %>
+
+  <% if (months.length === 0) { %>
+    <div class="text-center text-gray-500">暂无文章</div>
+  <% } else { %>
+    <% months.forEach((month, index) => { %>
+      <section class="month-section" data-index="<%= index %>" style="<%= index >= 3 ? 'display:none;' : '' %>">
+        <h2 class="text-xl font-bold mb-4 text-purple-600"><%= month %> (<%= postsByMonth[month].length %> 篇)</h2>
+        <div class="space-y-4">
+          <% postsByMonth[month].forEach(post => {
+            // 分类安全判断
+            let category = '未分类';
+            if (post.categories) {
+              if (post.categories.data?.length) {
+                category = post.categories.data[0].name;
+              } else if (post.categories.length && post.categories[0]?.name) {
+                category = post.categories[0].name;
+              }
+            }
+            // 随机颜色
+            let color = colors[Math.floor(Math.random() * colors.length)];
+          %>
+          <article class="bg-white p-5 rounded-xl shadow hover:shadow-xl transform hover:-translate-y-1 transition">
+            <div class="flex justify-between items-center mb-1 text-sm">
+              <span class="text-<%= color %>-600 font-semibold"><%= category %></span>
+              <span class="text-gray-500"><%= post.date.format('YYYY-MM-DD') %></span>
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-gray-800 hover:text-<%= color %>-600 transition">
+              <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+            </h3>
+            <a href="<%= url_for(post.path) %>" class="text-<%= color %>-600 hover:text-<%= color %>-800 text-sm font-medium">阅读全文 →</a>
+          </article>
+          <% }) %>
+        </div>
+      </section>
+    <% }) %>
+  <% } %>
+
+  <div class="text-center mt-8">
+    <button id="load-more-btn" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">加载更多</button>
+  </div>
+</div>
+
+<script>
+let currentIndex = 3;
+const totalMonths = <%= months.length %>;
+
+document.getElementById('load-more-btn').addEventListener('click', function() {
+  for (let i = currentIndex; i < Math.min(currentIndex + 1, totalMonths); i++) {
+    const section = document.querySelector(`.month-section[data-index="${i}"]`);
+    if (section) section.style.display = 'block';
+  }
+  currentIndex++;
+  if (currentIndex >= totalMonths) {
+    this.style.display = 'none';
+  }
+});
+</script>
