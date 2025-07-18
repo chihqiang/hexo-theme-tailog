@@ -5,7 +5,9 @@
       <h1
         class="text-white text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-pink-400"
       >
-        <%= conf('title') %>
+      <a href="/">
+          <%= conf('title') %>
+      </a>
       </h1>
       <div class="hidden md:flex space-x-6">
         <% let menu = conf('menu') %> <% for (let name in menu) { if(menu.hasOwnProperty(name)) { %>
