@@ -3,11 +3,19 @@
     let postsByMonth = {};
     site.posts.sort('-date').forEach(post => {
       let month = post.date.format('YYYY年M月');
-      postsByMonth[month] = postsByMonth[month] || [];
+      if (!postsByMonth[month]) postsByMonth[month] = [];
       postsByMonth[month].push(post);
     });
     let months = Object.keys(postsByMonth).sort((a, b) => b.localeCompare(a));
-    let colors = ['purple', 'blue', 'green', 'red', 'pink', 'indigo', 'orange', 'yellow', 'teal', 'cyan'];
+    const colors = ['purple', 'blue', 'green', 'red', 'pink', 'indigo', 'orange', 'yellow', 'teal', 'cyan'];
+
+    function getColorIndex(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash) % colors.length;
+    }
   %>
 
   <% if (months.length === 0) { %>
@@ -17,22 +25,11 @@
       <section class="month-section" data-index="<%= index %>" style="<%= index >= 3 ? 'display:none;' : '' %>">
         <h2 class="text-xl font-bold mb-4 text-purple-600"><%= month %> (<%= postsByMonth[month].length %> 篇)</h2>
         <div class="space-y-4">
-          <% postsByMonth[month].forEach(post => {
-            // 分类安全判断
-            let category = '未分类';
-            if (post.categories) {
-              if (post.categories.data?.length) {
-                category = post.categories.data[0].name;
-              } else if (post.categories.length && post.categories[0]?.name) {
-                category = post.categories[0].name;
-              }
-            }
-            // 随机颜色
-            let color = colors[Math.floor(Math.random() * colors.length)];
+          <% postsByMonth[month].forEach(post => { 
+            let color = colors[getColorIndex(post.path)];
           %>
           <article class="bg-white p-5 rounded-xl shadow hover:shadow-xl transform hover:-translate-y-1 transition">
             <div class="flex justify-between items-center mb-1 text-sm">
-              <span class="text-<%= color %>-600 font-semibold"><%= category %></span>
               <span class="text-gray-500"><%= post.date.format('YYYY-MM-DD') %></span>
             </div>
             <h3 class="text-lg font-bold mb-2 text-gray-800 hover:text-<%= color %>-600 transition">
@@ -44,25 +41,66 @@
         </div>
       </section>
     <% }) %>
-  <% } %>
 
-  <div class="text-center mt-8">
-    <button id="load-more-btn" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">加载更多</button>
-  </div>
+    <% if (months.length > 3) { %>
+    <div class="text-center mt-8">
+      <button id="load-more-btn" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+        加载更多
+      </button>
+      <p id="no-more-msg" class="mt-4 text-gray-500 hidden">没有更多文章了</p>
+    </div>
+    <% } %>
+  <% } %>
 </div>
 
 <script>
-let currentIndex = 3;
-const totalMonths = <%= months.length %>;
+(function() {
+  let currentIndex = 3;
+  const totalMonths = <%= months.length %>;
+  const loadCount = 2; // 每次加载多少个月份
 
-document.getElementById('load-more-btn').addEventListener('click', function() {
-  for (let i = currentIndex; i < Math.min(currentIndex + 1, totalMonths); i++) {
-    const section = document.querySelector(`.month-section[data-index="${i}"]`);
-    if (section) section.style.display = 'block';
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  const noMoreMsg = document.getElementById('no-more-msg');
+
+  function loadMoreMonths() {
+    for (let i = currentIndex; i < Math.min(currentIndex + loadCount, totalMonths); i++) {
+      const section = document.querySelector(`.month-section[data-index="${i}"]`);
+      if (section) section.style.display = 'block';
+    }
+    currentIndex += loadCount;
+
+    if (currentIndex >= totalMonths) {
+      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+      if (noMoreMsg) noMoreMsg.classList.remove('hidden');
+      window.removeEventListener('scroll', handleScroll);
+    }
   }
-  currentIndex++;
-  if (currentIndex >= totalMonths) {
-    this.style.display = 'none';
+
+  function throttle(fn, wait) {
+    let last = 0;
+    return function(...args) {
+      const now = Date.now();
+      if (now - last >= wait) {
+        last = now;
+        fn.apply(this, args);
+      }
+    }
   }
-});
+
+  function handleScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+    const windowHeight = window.innerHeight;
+    const fullHeight = document.documentElement.scrollHeight;
+
+    if (scrollTop + windowHeight > fullHeight - 100) {
+      loadMoreMonths();
+    }
+  }
+
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', loadMoreMonths);
+  }
+
+  window.addEventListener('scroll', throttle(handleScroll, 200));
+})();
 </script>

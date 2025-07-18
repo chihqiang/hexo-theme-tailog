@@ -1,11 +1,12 @@
 <div class="contar-wrap mx-auto px-4 py-8">
   <% if (is_archive()) { %>
     <%- partial('_partial/timeline') %>
+  <% } else if (page.path && page.path.startsWith('categories/')) { %>
+    <%- partial('_partial/post_card') %>
+  <% } else if (page.path && page.path.startsWith('tags/')) { %>
+    <%- partial('_partial/post_card') %>
   <% } else { %>
     <%- partial('_partial/post_list') %>
   <% } %>
 </div>
-
-<% if (!is_archive()) { %>
-  <%- partial('_partial/paginator') %>
-<% } %>
+<% if (!is_archive()) { %> <%- partial('_partial/paginator') %> <% } %>
