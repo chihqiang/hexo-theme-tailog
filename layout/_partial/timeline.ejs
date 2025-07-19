@@ -1,5 +1,6 @@
 <div class="timeline max-w-4xl mx-auto px-4 py-8 space-y-8" id="timeline-container">
   <% 
+    // 文章按月份分组
     let postsByMonth = {};
     site.posts.sort('-date').forEach(post => {
       let month = post.date.format('YYYY年M月');
@@ -7,6 +8,7 @@
       postsByMonth[month].push(post);
     });
     let months = Object.keys(postsByMonth).sort((a, b) => b.localeCompare(a));
+
     const colors = ['purple', 'blue', 'green', 'red', 'pink', 'indigo', 'orange', 'yellow', 'teal', 'cyan'];
 
     function getColorIndex(str) {
@@ -21,86 +23,70 @@
   <% if (months.length === 0) { %>
     <div class="text-center text-gray-500">暂无文章</div>
   <% } else { %>
+
     <% months.forEach((month, index) => { %>
-      <section class="month-section" data-index="<%= index %>" style="<%= index >= 3 ? 'display:none;' : '' %>">
-        <h2 class="text-xl font-bold mb-4 text-purple-600"><%= month %> (<%= postsByMonth[month].length %> 篇)</h2>
+      <section 
+        class="month-section" 
+        data-index="<%= index %>" 
+        style="<%= index >= 3 ? 'display:none;' : '' %>">
+        
+        <h2 class="text-xl font-bold mb-4 text-purple-600">
+          <%= month %> (<%= postsByMonth[month].length %> 篇)
+        </h2>
+
         <div class="space-y-4">
           <% postsByMonth[month].forEach(post => { 
             let color = colors[getColorIndex(post.path)];
           %>
-          <article class="bg-white p-5 rounded-xl shadow hover:shadow-xl transform hover:-translate-y-1 transition">
-            <div class="flex justify-between items-center mb-1 text-sm">
-              <span class="text-gray-500"><%= post.date.format('YYYY-MM-DD') %></span>
-            </div>
-            <h3 class="text-lg font-bold mb-2 text-gray-800 hover:text-<%= color %>-600 transition">
-              <a href="<%= url_for(post.path) %>"><%= post.title %></a>
-            </h3>
-            <a href="<%= url_for(post.path) %>" class="text-<%= color %>-600 hover:text-<%= color %>-800 text-sm font-medium">阅读全文 →</a>
-          </article>
+            <article class="bg-white p-5 rounded-xl shadow hover:shadow-xl transform hover:-translate-y-1 transition">
+              <div class="flex justify-between items-center mb-1 text-sm">
+                <span class="text-gray-500"><%= post.date.format('YYYY-MM-DD') %></span>
+              </div>
+              <h3 class="text-lg font-bold mb-2 text-gray-800 hover:text-<%= color %>-600 transition">
+                <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+              </h3>
+              <a href="<%= url_for(post.path) %>" class="text-<%= color %>-600 hover:text-<%= color %>-800 text-sm font-medium">
+                阅读全文 →
+              </a>
+            </article>
           <% }) %>
         </div>
       </section>
     <% }) %>
 
     <% if (months.length > 3) { %>
-    <div class="text-center mt-8">
-      <button id="load-more-btn" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
-        加载更多
-      </button>
-      <p id="no-more-msg" class="mt-4 text-gray-500 hidden">没有更多文章了</p>
-    </div>
+      <div class="text-center mt-8">
+        <button id="load-more-btn" class="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">加载更多</button>
+        <p id="no-more-msg" class="mt-4 text-gray-500 hidden">没有更多文章了</p>
+      </div>
     <% } %>
+
   <% } %>
 </div>
 
 <script>
-(function() {
-  let currentIndex = 3;
+(function(){
   const totalMonths = <%= months.length %>;
-  const loadCount = 2; // 每次加载多少个月份
-
   const loadMoreBtn = document.getElementById('load-more-btn');
   const noMoreMsg = document.getElementById('no-more-msg');
 
-  function loadMoreMonths() {
-    for (let i = currentIndex; i < Math.min(currentIndex + loadCount, totalMonths); i++) {
+  const loader = createLoadMore({
+    total: totalMonths,
+    loadCount: 2,
+    startIndex: 3,
+    waitTime: 200,
+    immediate: true,
+    onLoad: (i) => {
       const section = document.querySelector(`.month-section[data-index="${i}"]`);
       if (section) section.style.display = 'block';
+    },
+    onFinish: () => {
+      loadMoreBtn?.classList.add('hidden');
+      noMoreMsg?.classList.remove('hidden');
     }
-    currentIndex += loadCount;
+  });
 
-    if (currentIndex >= totalMonths) {
-      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
-      if (noMoreMsg) noMoreMsg.classList.remove('hidden');
-      window.removeEventListener('scroll', handleScroll);
-    }
-  }
-
-  function throttle(fn, wait) {
-    let last = 0;
-    return function(...args) {
-      const now = Date.now();
-      if (now - last >= wait) {
-        last = now;
-        fn.apply(this, args);
-      }
-    }
-  }
-
-  function handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-    const windowHeight = window.innerHeight;
-    const fullHeight = document.documentElement.scrollHeight;
-
-    if (scrollTop + windowHeight > fullHeight - 100) {
-      loadMoreMonths();
-    }
-  }
-
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', loadMoreMonths);
-  }
-
-  window.addEventListener('scroll', throttle(handleScroll, 200));
+  loadMoreBtn?.addEventListener('click', () => loader.loadMore());
+  loader.start();
 })();
 </script>

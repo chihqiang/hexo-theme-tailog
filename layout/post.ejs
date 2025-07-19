@@ -39,26 +39,3 @@
   </div>
 </article>
 
-<script>
-// 代码复制按钮逻辑
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('figure.highlight pre').forEach(function (block) {
-    const wrapper = block.parentElement;
-    wrapper.style.position = 'relative';
-
-    const btn = document.createElement('button');
-    btn.textContent = '复制';
-    btn.className = 'copy-btn absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded transition';
-
-    btn.addEventListener('click', function () {
-      const code = block.innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        btn.textContent = '已复制';
-        setTimeout(() => btn.textContent = '复制', 1500);
-      });
-    });
-
-    wrapper.appendChild(btn);
-  });
-});
-</script>
