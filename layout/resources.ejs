@@ -1,0 +1,30 @@
+<div class="tag-cloud flex flex-wrap justify-center gap-4 my-8">
+  <div class="bg-white rounded-xl shadow-lg p-8 max-w-xl w-full space-y-6">
+    <ul class="space-y-4 text-lg">
+      <% listResources().forEach(function(resource){ %>
+        <li x-data="{ bgColor: randomColor() }">
+          <a
+            :style="`background: ${bgColor}`"
+            href="<%= resource %>"
+            class="block p-4 rounded-lg text-white font-semibold shadow hover:scale-[1.02] transition"
+          >
+            👉 <%= resource %>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>
+
+<script>
+  function randomColor() {
+    const colors = [
+      'linear-gradient(to right, #f43f5e, #fb923c)',  // pink-orange
+      'linear-gradient(to right, #3b82f6, #06b6d4)',  // blue-cyan
+      'linear-gradient(to right, #10b981, #22c55e)',  // green shades
+      'linear-gradient(to right, #f59e0b, #ef4444)',  // amber-red
+      'linear-gradient(to right, #8b5cf6, #6366f1)',  // purple-indigo
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+</script>
