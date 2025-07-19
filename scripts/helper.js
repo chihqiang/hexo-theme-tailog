@@ -13,3 +13,11 @@ hexo.extend.generator.register('tags', function (locals) {
         layout: ['tags', 'layout']
     };
 });
+
+hexo.extend.generator.register('404', function (locals) {
+    return {
+        path: '404.html',
+        data: {},
+        layout: ['404', 'layout']
+    };
+});
