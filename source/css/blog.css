@@ -58,6 +58,11 @@
     transform: translateX(0);
   }
 }
+
+.post-content{
+   word-break:break-all;
+}
+
 /* 搜索组建开始 */
 .floating-search {
   position: fixed;

@@ -20,7 +20,7 @@
                 <a href="<%- url_for(post.path) %>"><%= post.title %></a>
             </h3>
 
-            <p class="text-gray-600 mb-4"><%- strip_html(post.content).substr(0, 100) %>...</p>
+            <p class="text-gray-600 mb-4 post-content"><%- strip_html(post.content).substr(0, 100) %>...</p>
 
             <a href="<%- url_for(post.path) %>" class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full hover:shadow-md transition">
                 阅读全文

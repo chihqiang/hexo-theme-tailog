@@ -18,7 +18,7 @@
       <a href="<%- url_for(post.path) %>"><%- post.title %></a>
     </h3>
 
-    <p class="text-gray-600 mb-3">
+    <p class="text-gray-600 mb-3 post-content">
       <%- strip_html(post.content).substr(0, 100) %>...
     </p>
 
