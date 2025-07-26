@@ -124,7 +124,11 @@ function createLoadMore({
   let currentIndex = startIndex;
 
   function loadMore() {
-    for (let i = currentIndex; i < Math.min(currentIndex + loadCount, total); i++) {
+    for (
+      let i = currentIndex;
+      i < Math.min(currentIndex + loadCount, total);
+      i++
+    ) {
       onLoad(i);
     }
     currentIndex += loadCount;
@@ -134,7 +138,10 @@ function createLoadMore({
     }
   }
   function handleScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollTop =
+      window.pageYOffset ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop;
     const windowHeight = window.innerHeight;
     const fullHeight = document.documentElement.scrollHeight;
 
