@@ -1,7 +1,9 @@
+/*
 body {
   user-select: none;
   -webkit-user-drag: none;
 }
+*/
 
 @keyframes fadeIn {
   from {
