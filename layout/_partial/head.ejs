@@ -28,8 +28,67 @@
   <% if (conf("description")) { %>
     <meta name="description" content="<%= conf('description') %>">
   <% } %>
+  
+  <% let description = page.excerpt || conf('description') || ''; %>
+  <% let image = page.cover || conf('cover') || conf('favicon'); %>
+  <% let url = page.permalink || config.url + config.root; %>
+  
+  <meta property="og:type" content="<%= is_post() ? 'article' : 'website' %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= strip_html(description).substring(0, 200) %>">
+  <meta property="og:url" content="<%= url %>">
+  <meta property="og:image" content="<%= url_for(image) %>">
+  <meta property="og:site_name" content="<%= conf('title') %>">
+  <% if (is_post()) { %>
+    <meta property="article:published_time" content="<%= page.date %>">
+    <meta property="article:author" content="<%= conf('author') %>">
+    <% if (page.tags && page.tags.length) { %>
+      <% page.tags.forEach(function(tag){ %>
+        <meta property="article:tag" content="<%= tag.name %>">
+      <% }) %>
+    <% } %>
+  <% } %>
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= title %>">
+  <meta name="twitter:description" content="<%= strip_html(description).substring(0, 200) %>">
+  <meta name="twitter:image" content="<%= url_for(image) %>">
+  
+  <% if (is_post()) { %>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "<%= page.title %>",
+      "image": "<%= url_for(image) %>",
+      "author": {
+        "@type": "Person",
+        "name": "<%= conf('author') %>"
+      },
+      "datePublished": "<%= page.date %>",
+      "dateModified": "<%= page.updated || page.date %>",
+      "description": "<%= strip_html(description).substring(0, 200) %>"
+    }
+    </script>
+  <% } %>
+  
   <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(conf('favicon')) %>">
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {}
+      }
+    }
+  </script>
   <script src="https://unpkg.com/alpinejs@3.14.9/dist/cdn.min.js" defer></script>
   <%- css('css/blog.css') %>
   <%- js('js/blog.js') %>
