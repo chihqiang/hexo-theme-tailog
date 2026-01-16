@@ -2,7 +2,6 @@
 menu:
   Home: /           # 主页链接
   Archives: /archives  # 文章归档页链接
-  Rsources: /resources  # 源代码文件
   Tags: /tags       # 标签页链接
   About: /about     # 关于页链接
   RSS: /sitemap.xml # RSS 或站点地图链接
@@ -26,6 +25,8 @@ friends:
     url: https://github.com/chihqiang
   - name: 志强vlog
     url: https://www.zhiqiang.wang
+  - name: vtools
+    url: https://tools.zhiqiang.wang/
 
 # sitemap 配置，控制站点地图生成参数
 sitemap:
