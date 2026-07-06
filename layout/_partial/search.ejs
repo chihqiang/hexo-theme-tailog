@@ -1,13 +1,35 @@
 <div id="searchOverlay" class="overlay hidden"></div>
 <div id="inputContainer" class="floating-search hidden">
-  <input
-    type="text"
-    id="inputField"
-    placeholder="搜索文章..."
-    class="search-input"
-    autocomplete="off"
-  />
+  <!-- 搜索头部 -->
+  <div class="search-header">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <input
+        type="text"
+        id="inputField"
+        placeholder="搜索文章..."
+        class="search-input"
+        autocomplete="off"
+      />
+      <kbd class="search-kbd">ESC</kbd>
+    </div>
+  </div>
+  <!-- 搜索结果 -->
   <div id="articleList" class="search-results"></div>
+  <!-- 搜索底部提示 -->
+  <div class="search-footer">
+    <span class="flex items-center gap-1">
+      <kbd class="search-footer-kbd">↵</kbd> 打开
+    </span>
+    <span class="flex items-center gap-1">
+      <kbd class="search-footer-kbd">↑↓</kbd> 导航
+    </span>
+    <span class="flex items-center gap-1">
+      <kbd class="search-footer-kbd">ESC</kbd> 关闭
+    </span>
+  </div>
 </div>
 
 <script>

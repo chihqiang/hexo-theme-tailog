@@ -1,21 +1,30 @@
-<div class="tag-cloud flex flex-wrap justify-center gap-4 my-8">
-  <div class="bg-white rounded-xl shadow-lg p-8 max-w-xl w-full space-y-6">
-    <ul class="space-y-4 text-lg">
-      <% listResources().forEach(function(resource){ %>
-        <li x-data="{ bgColor: randomColor() }">
-          <a
-            :style="`background: ${bgColor}`"
-            href="<%= resource %>"
-            class="block p-4 rounded-lg text-white font-semibold shadow hover:scale-[1.02] transition"
-          >
-            👉 <%= resource %>
-          </a>
-        </li>
-      <% }) %>
-    </ul>
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <header class="gradient-header mb-8 fade-up">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span class="text-sm font-medium text-slate-500 dark:text-slate-400">在线工具</span>
+    </div>
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">资源</h1>
+    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">在线工具与资源</p>
+  </header>
+
+  <div class="space-y-3">
+    <% listResources().forEach(function(resource, idx){ %>
+      <a href="<%= resource %>" class="article-card group flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-lg transition-all duration-300 fade-up" style="animation-delay: <%= idx * 60 %>ms;">
+        <span class="flex-shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        </span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+            <%= resource %>
+          </p>
+        </div>
+        <svg class="w-5 h-5 text-slate-300 dark:text-slate-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    <% }) %>
   </div>
 </div>
-
-<script>
-
-</script>

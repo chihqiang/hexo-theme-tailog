@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-    <%- partial('_partial/head') %>
+<html lang="zh-CN" class="scroll-smooth">
+  <%- partial('_partial/head') %>
 
-<body class="bg-gradient-to-br from-purple-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 min-h-screen flex flex-col transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 min-h-screen flex flex-col antialiased transition-colors duration-200">
 
-    <%- partial('_partial/nav') %>
+  <%- partial('_partial/nav') %>
 
-    <!-- 阅读进度条 -->
-    <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500 z-50 transition-all duration-150" style="width: 0%"></div>
+  <!-- 阅读进度条 -->
+  <div id="reading-progress" class="fixed top-0 left-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 z-50 transition-all duration-150 ease-out" style="width: 0%"></div>
 
-    <!-- 博客列表 -->
-    <div class="container mx-auto px-4 py-8">
-       <%- typeof body !== 'undefined' ? body : '' %>
+  <!-- 主内容区 -->
+  <main class="flex-1 w-full">
+    <%- typeof body !== 'undefined' ? body : '' %>
+  </main>
 
-    </div>
-    <%- partial('_partial/footer') %>
+  <%- partial('_partial/footer') %>
 
-    <!-- 回到顶部按钮 -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 bg-gradient-to-r from-purple-500 to-blue-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 opacity-0 invisible z-50">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-        </svg>
-    </button>
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" class="fixed bottom-6 right-6 p-2.5 rounded-full bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 shadow-lg ring-1 ring-slate-900/5 hover:scale-110 active:scale-95 transition-all duration-200 opacity-0 invisible z-50" aria-label="回到顶部">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+  </button>
 </body>
 </html>

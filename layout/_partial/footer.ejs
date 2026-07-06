@@ -1,22 +1,47 @@
-<footer class="bg-gradient-to-r from-purple-700 to-blue-600 text-white py-8 mt-auto">
-  <div class="container mx-auto px-4">
-    <div class="flex flex-col md:flex-row md:justify-between md:items-start space-y-6 md:space-y-0">
+<footer class="border-t border-slate-200 dark:border-slate-800 mt-8 bg-white dark:bg-slate-900">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <!-- 上半部分：站点信息 + 链接 -->
+    <div class="py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
       <!-- 关于站点 -->
-      <div class="md:w-1/4">
-        <h3 class="text-xl font-semibold mb-3"><%= conf('title') %></h3>
-        <p class="text-sm opacity-80">
-          感谢您的访问！这里是 <%= conf('author') %> 专属博客，分享生活与技术。
+      <div class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-bold text-xs">
+            <%= (conf('title') || 'B').charAt(0) %>
+          </span>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white"><%= conf('title') %></h3>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+          <%= conf('subtitle') || conf('description') %>
         </p>
+        <!-- 社交图标 -->
+        <div class="mt-4 flex items-center gap-3">
+          <% if (conf('follow')) { %>
+          <a href="<%= conf('follow') %>" target="_blank" rel="noopener" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" aria-label="GitHub">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+          <% } %>
+          <% if (conf('email')) { %>
+          <a href="mailto:<%= conf('email') %>" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" aria-label="Email">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </a>
+          <% } %>
+          <% let friends = conf('friends') || []; %>
+          <% friends.forEach(function(friend){ if(friend.url && friend.url.includes('twitter.com')) { %>
+          <a href="<%- friend.url %>" target="_blank" rel="noopener" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" aria-label="Twitter">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <% } }) %>
+        </div>
       </div>
 
-      <!-- 快捷链接 -->
-      <div class="md:w-1/4">
-        <h3 class="text-xl font-semibold mb-3">快捷导航</h3>
-        <ul class="space-y-2 text-sm opacity-90">
-          <% let menu = conf('menu'); %>
+      <!-- 快捷导航 -->
+      <div>
+        <h3 class="text-xs font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-3">导航</h3>
+        <ul class="space-y-2">
+          <% let menu = conf('menu') || {}; %>
           <% for (let name in menu) { if (menu.hasOwnProperty(name)) { %>
             <li>
-              <a href="<%- url_for(menu[name]) %>" class="hover:text-yellow-300 transition">
+              <a href="<%- url_for(menu[name]) %>" class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 <%= name %>
               </a>
             </li>
@@ -25,13 +50,13 @@
       </div>
 
       <!-- 友情链接 -->
-      <div class="md:w-1/4">
-        <h3 class="text-xl font-semibold mb-3">友情链接</h3>
-        <ul class="space-y-2 text-sm opacity-90">
-          <% let friends = conf('friends') || []; %>
-          <% friends.forEach(function(friend){ %>
+      <div>
+        <h3 class="text-xs font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-3">友链</h3>
+        <ul class="space-y-2">
+          <% let friends2 = conf('friends') || []; %>
+          <% friends2.forEach(function(friend){ %>
             <li>
-              <a href="<%- friend.url %>" target="_blank" rel="noopener" class="hover:text-yellow-300 transition">
+              <a href="<%- friend.url %>" target="_blank" rel="noopener" class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                 <%= friend.name %>
               </a>
             </li>
@@ -40,41 +65,31 @@
       </div>
 
       <!-- 联系方式 -->
-      <div class="md:w-1/4">
-        <h3 class="text-xl font-semibold mb-3">联系方式</h3>
-
-        <p class="text-sm opacity-80 flex items-center space-x-2">
-          <!-- 邮箱图标 -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V8a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z" />
-          </svg>
-          <a href="mailto:<%= conf('email') %>" class="hover:text-yellow-300"><%= conf('email') %></a>
-        </p>
-
-        <p class="text-sm opacity-80 flex items-center space-x-2 mt-2">
-          <!-- 地址图标 -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s8-4.5 8-10a8 8 0 10-16 0c0 5.5 8 10 8 10z" />
-          </svg>
-          <span><%= conf('address') %></span>
-        </p>
+      <div>
+        <h3 class="text-xs font-semibold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-3">联系</h3>
+        <ul class="space-y-2">
+          <li>
+            <a href="mailto:<%= conf('email') %>" class="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              <%= conf('email') %>
+            </a>
+          </li>
+          <li>
+            <span class="text-sm text-slate-500 dark:text-slate-400"><%= conf('address') %></span>
+          </li>
+        </ul>
       </div>
-
-
     </div>
 
-    <hr class="my-6 border-purple-400 opacity-50" />
-
-    <p class="text-center text-sm opacity-70 mb-2">
-      © 2024 <%= conf('title') %>. 保留所有权利.
-    </p>
-
-    <!-- Hexo 和主题版权 -->
-    <p class="text-center text-xs opacity-50">
-      由 <a href="https://hexo.io/" target="_blank" rel="noopener" class="underline hover:text-yellow-300">Hexo</a> 驱动，主题由 
-      <a href="https://github.com/chihqiang/hexo-theme-tailog" target="_blank" rel="noopener" class="underline hover:text-yellow-300">hexo-theme-tailog</a> 提供。
-    </p>
+    <!-- 底部版权栏 -->
+    <div class="py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="text-xs text-slate-400 dark:text-slate-500">
+        © <%= new Date().getFullYear() %> <%= conf('title') %>. All rights reserved.
+      </p>
+      <p class="text-xs text-slate-400 dark:text-slate-500">
+        Powered by <a href="https://hexo.io/" target="_blank" rel="noopener" class="hover:text-indigo-500 transition-colors">Hexo</a>
+        · Theme <a href="https://github.com/chihqiang/hexo-theme-tailog" target="_blank" rel="noopener" class="hover:text-indigo-500 transition-colors">tailog</a>
+      </p>
+    </div>
   </div>
   <%- partial('analytics') %>
 </footer>

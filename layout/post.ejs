@@ -1,41 +1,161 @@
-<article class="bg-white p-6 sm:p-8 rounded-xl shadow-lg transition hover:scale-[1.01] max-w-5xl mx-auto mt-8">
-  <!-- 标题 -->
-  <header class="mb-6 sm:mb-8">
-    <h1 class="text-3xl sm:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-      <%= page.title %>
-    </h1>
-
-    <% if (page.layout === 'post') { %>
-      <div class="flex flex-wrap items-center text-gray-500 text-sm space-x-4">
-        <span><%- date(page.date, "YYYY-MM-DD") %></span>
-
-        <% if (page.wordcount) { %>
-          <span><%= page.wordcount %> 字</span>
-          <span><%= Math.ceil(page.wordcount / 300) %> 分钟阅读</span>
-        <% } %>
-
+<%
+  // 计算字数和阅读时间
+  let wordcount = 0;
+  if (page.content) {
+    wordcount = strip_html(page.content).length;
+  }
+  let readTime = Math.max(1, Math.ceil(wordcount / 400));
+%>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <div class="flex gap-8">
+    <!-- 文章主体 -->
+    <article class="flex-1 min-w-0 max-w-3xl">
+      <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-10 fade-up">
+      <!-- 文章头部 -->
+      <header class="mb-8">
+        <!-- 分类 -->
         <% if (page.categories && page.categories.length) { %>
-          <span>
-            <% page.categories.forEach(function(cat, i){ %>
-              <a href="<%= url_for(cat.path) %>" class="text-blue-600 hover:underline"><%= cat.name %></a><%= i < page.categories.length - 1 ? ', ' : '' %>
-            <% }) %>
-          </span>
+        <div class="mb-3 flex flex-wrap gap-2">
+          <% page.categories.forEach(function(cat){ %>
+            <a href="<%= url_for(cat.path) %>" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
+              <%= cat.name %>
+            </a>
+          <% }) %>
+        </div>
         <% } %>
 
-        <% if (page.tags && page.tags.length) { %>
-          <span>
-            <% page.tags.forEach(function(tag, i){ %>
-              <a href="<%= url_for(tag.path) %>" class="text-blue-600 hover:underline"><%= tag.name %></a><%= i < page.tags.length - 1 ? ', ' : '' %>
-            <% }) %>
+        <!-- 标题 -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+          <%= page.title %>
+        </h1>
+
+        <!-- 元信息 -->
+        <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-400 dark:text-slate-500">
+          <!-- 作者 -->
+          <span class="flex items-center gap-1.5">
+            <img src="https://api.dicebear.com/7.x/initials/svg?seed=<%= conf('author') %>&backgroundColor=6366f1&textColor=ffffff&fontSize=42" alt="<%= conf('author') %>" class="w-5 h-5 rounded-full" loading="lazy" />
+            <span class="text-slate-600 dark:text-slate-400 font-medium"><%= conf('author') %></span>
           </span>
-        <% } %>
+          <!-- 日期 -->
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <%- date(page.date, "YYYY-MM-DD") %>
+          </span>
+          <% if (wordcount > 0) { %>
+          <!-- 阅读时间 -->
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            约 <%= readTime %> 分钟
+          </span>
+          <!-- 字数 -->
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <%= wordcount %> 字
+          </span>
+          <% } %>
+        </div>
+      </header>
+
+      <!-- 正文 -->
+      <div class="article-content" id="article-content">
+        <%- page.content %>
       </div>
-    <% } %>
-  </header>
 
-  <!-- 正文 -->
-  <div class="article-content prose prose-base lg:prose-lg max-w-none">
-    <%- page.content %>
+      <!-- 文章底部标签 -->
+      <% if (page.tags && page.tags.length) { %>
+      <div class="mt-10 pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm text-slate-400 dark:text-slate-500 mr-1">标签：</span>
+          <% page.tags.forEach(function(tag){ %>
+            <a href="<%= url_for(tag.path) %>" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              <%= tag.name %>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- 分享按钮 -->
+      <div class="mt-8 flex items-center gap-3">
+        <span class="text-xs text-slate-400 dark:text-slate-500">分享：</span>
+        <button class="share-btn copy-link inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" data-url="<%= page.path %>" data-title="<%= page.title %>">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          复制链接
+        </button>
+        <a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(page.title) %>&url=<%= encodeURIComponent(config.url + '/' + page.path) %>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Twitter
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(config.url + '/' + page.path) %>" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z"/></svg>
+          Facebook
+        </a>
+      </div>
+
+      <!-- 作者卡片 -->
+      <div class="mt-6 rounded-2xl bg-gradient-to-br from-indigo-50 via-slate-50 to-purple-50 dark:from-slate-900 dark:to-slate-800/50 border border-slate-200 dark:border-slate-800 p-6 flex items-center gap-4 fade-up">
+        <img src="https://api.dicebear.com/7.x/initials/svg?seed=<%= conf('author') %>&backgroundColor=6366f1&textColor=ffffff&fontSize=42" alt="<%= conf('author') %>" class="w-14 h-14 rounded-full shrink-0" loading="lazy" />
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-slate-900 dark:text-white"><%= conf('author') %></p>
+          <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+            <%= conf('subtitle') || conf('description') %>
+          </p>
+        </div>
+        <a href="<%= conf('follow') || 'https://github.com/chihqiang' %>" target="_blank" rel="noopener" class="hidden sm:inline-flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          关注
+        </a>
+      </div>
+
+      <!-- 上下篇导航 -->
+      <nav class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 fade-up">
+        <% if (page.prev) { %>
+        <a href="<%- url_for(page.prev.path) %>" class="group rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-slate-900/50 transition-all">
+          <div class="text-xs text-slate-400 dark:text-slate-500 mb-1">← 上一篇</div>
+          <div class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+            <%= page.prev.title %>
+          </div>
+        </a>
+        <% } else { %>
+        <div></div>
+        <% } %>
+
+        <% if (page.next) { %>
+        <a href="<%- url_for(page.next.path) %>" class="group rounded-xl border border-slate-200 dark:border-slate-800 p-4 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-white dark:hover:bg-slate-900/50 transition-all text-right">
+          <div class="text-xs text-slate-400 dark:text-slate-500 mb-1">下一篇 →</div>
+          <div class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
+            <%= page.next.title %>
+          </div>
+        </a>
+        <% } %>
+    </nav>
+      </div>
+    </article>
+
+    <!-- 右侧 TOC 目录 -->
+    <aside class="hidden xl:block w-56 shrink-0">
+      <div class="sticky top-20">
+        <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white mb-3">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h7M4 18h7" />
+            </svg>
+            目录
+          </h3>
+          <nav id="toc" class="toc-nav max-h-[calc(100vh-12rem)] overflow-y-auto">
+            <p class="text-xs text-slate-400 dark:text-slate-600">加载中...</p>
+          </nav>
+        </div>
+      </div>
+    </aside>
   </div>
-</article>
-
+</div>

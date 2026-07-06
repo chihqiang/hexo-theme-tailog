@@ -1,31 +1,113 @@
-<div class="grid md:grid-cols-2 gap-8">
-    <% page.posts.each(function (post) { %>
-    <!-- 文章卡片 -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-500 hover:shadow-2xl hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-2">
-                <div class="text-sm text-purple-600 font-semibold space-x-2">
-                    <% if (post.categories && post.categories.length) { %>
-                        <% post.categories.forEach(function(cat){ %>
-                            <a href="<%= url_for(cat.path) %>" class="hover:underline"><%= cat.name %></a>
-                        <% }) %>
-                    <% } else { %>
-                        <span>未分类</span>
-                    <% } %>
-                </div>
-                <span class="text-sm text-gray-500"><%- date(post.date, "YYYY.MM.DD") %></span>
-            </div>
+<%
+  // 判断页面类型，获取标题和描述
+  // Hexo 中 page.category / page.tag 是字符串名称，page.posts 是文章列表
+  let pageTitle = '文章';
+  let pageDesc = '';
+  let totalCount = 0;
+  if (page.category) {
+    pageTitle = page.category;
+    totalCount = page.posts.length;
+    pageDesc = '分类下共 ' + totalCount + ' 篇文章';
+  } else if (page.tag) {
+    pageTitle = page.tag;
+    totalCount = page.posts.length;
+    pageDesc = '标签下共 ' + totalCount + ' 篇文章';
+  }
+%>
+<div class="flex gap-8">
+  <div class="flex-1 min-w-0">
+    <!-- 页面标题导航 -->
+    <div class="mb-6 fade-up">
+      <!-- 面包屑 -->
+      <nav class="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-600 mb-2">
+        <a href="<%- url_for('/') %>" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">首页</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <% if (page.category) { %>
+        <a href="/categories" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">分类</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <% } else if (page.tag) { %>
+        <a href="/tags" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">标签</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <% } %>
+        <span class="text-slate-600 dark:text-slate-400 font-medium truncate"><%= pageTitle %></span>
+      </nav>
 
-            <h3 class="text-xl font-bold mb-3 text-gray-800 hover:text-purple-600 transition">
-                <a href="<%- url_for(post.path) %>"><%= post.title %></a>
-            </h3>
-
-            <p class="text-gray-600 mb-4 post-content"><%- strip_html(post.content).substr(0, 100) %>...</p>
-
-            <a href="<%- url_for(post.path) %>" class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full hover:shadow-md transition">
-                阅读全文
-            </a>
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+            <%= pageTitle %>
+            <% if (page.category) { %>
+            <span class="inline-flex items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-semibold px-2 py-0.5">#</span>
+            <% } else if (page.tag) { %>
+            <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-sm font-semibold px-2 py-0.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            </span>
+            <% } %>
+          </h1>
+          <% if (pageDesc) { %>
+          <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400"><%= pageDesc %></p>
+          <% } %>
         </div>
+        <% if (totalCount > 0) { %>
+        <span class="shrink-0 text-3xl font-bold text-indigo-600 dark:text-indigo-400 tabular-nums"><%= totalCount %></span>
+        <% } %>
+      </div>
     </div>
-    <% }) %>
+
+    <!-- 文章卡片网格 -->
+    <div class="grid sm:grid-cols-2 gap-4">
+      <% page.posts.each(function(post, idx) {
+        let postWordCount = strip_html(post.content).length;
+        let postReadTime = Math.max(1, Math.ceil(postWordCount / 400));
+      %>
+      <article class="article-card group relative flex flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-200 dark:hover:border-indigo-700 hover:shadow-lg transition-all duration-300 p-5 fade-up" style="animation-delay: <%= idx * 40 %>ms;">
+        <!-- 分类 + 日期 -->
+        <div class="flex items-center gap-2 mb-2 text-sm">
+          <% if (post.categories && post.categories.length) { %>
+            <% post.categories.forEach(function(cat){ %>
+              <a href="<%= url_for(cat.path) %>" class="relative z-10 text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                <%= cat.name %>
+              </a>
+            <% }) %>
+          <% } else { %>
+            <span class="text-slate-400 dark:text-slate-600">未分类</span>
+          <% } %>
+          <span class="text-slate-300 dark:text-slate-700">·</span>
+          <time class="text-slate-400 dark:text-slate-500"><%- date(post.date, "YYYY-MM-DD") %></time>
+        </div>
+
+        <!-- 标题 -->
+        <h3 class="text-base font-semibold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug">
+          <a href="<%- url_for(post.path) %>"><%- post.title %></a>
+        </h3>
+
+        <!-- 摘要 -->
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 line-clamp-3 post-content flex-1">
+          <%- strip_html(post.content).substr(0, 120) %>...
+        </p>
+
+        <!-- 底部：标签 + 阅读时间 -->
+        <div class="mt-4 flex items-center justify-between gap-2">
+          <% if (post.tags && post.tags.length) { %>
+          <div class="flex flex-wrap gap-1.5 min-w-0">
+            <% post.tags.forEach(function(tag){ %>
+              <a href="<%= url_for(tag.path) %>" class="relative z-10 inline-flex items-center px-2 py-0.5 rounded text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <%= tag.name %>
+              </a>
+            <% }) %>
+          </div>
+          <% } else { %>
+          <span></span>
+          <% } %>
+          <span class="shrink-0 text-xs text-slate-400 dark:text-slate-600"><%= postReadTime %> 分钟</span>
+        </div>
+
+        <!-- 整卡片可点击 -->
+        <a href="<%- url_for(post.path) %>" class="absolute inset-0" aria-label="<%= post.title %>"></a>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+
+  <%- partial('_partial/sidebar') %>
 </div>

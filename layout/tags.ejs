@@ -1,25 +1,114 @@
-<% function randomColor() { 
-  const colors = [
-    'from-pink-400 to-purple-400',
-    'from-purple-400 to-blue-400',
-    'from-blue-400 to-teal-400',
-    'from-yellow-400 to-orange-400',
-    'from-green-400 to-blue-400',
-    'from-red-400 to-pink-400',
-    'from-indigo-400 to-purple-400',
-    'from-teal-400 to-green-400'
+<%
+  // 计算最大和最小文章数
+  let maxCount = 0, minCount = Infinity;
+  if (site.tags.size() > 0) {
+    site.tags.forEach(function(tag) {
+      if (tag.length > maxCount) maxCount = tag.length;
+      if (tag.length < minCount) minCount = tag.length;
+    });
+  }
+  // 热度等级：根据文章数量分为 4 档，对应不同渐变色
+  function getHeatLevel(count) {
+    if (maxCount === minCount) return 0;
+    let ratio = (count - minCount) / (maxCount - minCount);
+    if (ratio > 0.75) return 3; // 火热
+    if (ratio > 0.5) return 2;  // 较热
+    if (ratio > 0.25) return 1; // 适中
+    return 0; // 清凉
+  }
+  // 热度等级对应的样式类
+  let heatStyles = [
+    { bg: 'from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800/50', text: 'text-slate-600 dark:text-slate-400', border: 'border-slate-200 dark:border-slate-700', glow: 'hover:shadow-slate-300/50 dark:hover:shadow-slate-700/50', dot: 'bg-slate-400' },
+    { bg: 'from-sky-50 to-cyan-50 dark:from-sky-900/30 dark:to-cyan-900/20', text: 'text-sky-600 dark:text-sky-400', border: 'border-sky-200 dark:border-sky-800', glow: 'hover:shadow-sky-300/50 dark:hover:shadow-sky-700/50', dot: 'bg-sky-400' },
+    { bg: 'from-violet-50 to-purple-50 dark:from-violet-900/30 dark:to-purple-900/20', text: 'text-violet-600 dark:text-violet-400', border: 'border-violet-200 dark:border-violet-800', glow: 'hover:shadow-violet-300/50 dark:hover:shadow-violet-700/50', dot: 'bg-violet-400' },
+    { bg: 'from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20', text: 'text-orange-600 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-800', glow: 'hover:shadow-orange-300/50 dark:hover:shadow-orange-700/50', dot: 'bg-orange-500' }
   ];
-  return colors[Math.floor(Math.random() * colors.length)];
-} %>
-<div class="tag-cloud flex flex-wrap justify-center gap-4 my-8">
-  <% if (site.tags.size() > 0) { %>
-    <% site.tags.sort('name').forEach(function(tag){ %>
-      <a
-        href="<%= url_for(tag.path) %>"
-        class="rotate-animation px-6 py-3 bg-gradient-to-r <%= randomColor() %> text-white rounded-full shadow-lg hover:shadow-xl transition duration-300 text-lg font-medium"
-      >
-        <%= tag.name %> (<%= tag.length %>)
-      </a>
-    <% }) %>
-  <% } %>
+  // 统计各热度等级数量
+  let heatCounts = [0, 0, 0, 0];
+  if (site.tags.size() > 0) {
+    site.tags.forEach(function(tag) {
+      heatCounts[getHeatLevel(tag.length)]++;
+    });
+  }
+%>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <div class="flex gap-8">
+    <div class="flex-1 min-w-0">
+      <!-- Hero 渐变头部 -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-600 dark:via-purple-600 dark:to-pink-600 p-6 sm:p-8 mb-6">
+        <!-- 装饰光斑 -->
+        <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div class="absolute top-1/2 right-1/3 w-20 h-20 bg-yellow-300/10 rounded-full blur-lg"></div>
+
+        <div class="relative">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex h-2 w-2 rounded-full bg-white/80 animate-pulse"></span>
+            <span class="text-sm font-medium text-white/80">Tag Cloud</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            标签云
+          </h1>
+          <p class="mt-2 text-sm text-white/70">
+            探索 <span class="font-bold text-white"><%= site.tags.length %></span> 个标签，发现你感兴趣的内容
+          </p>
+
+          <!-- 热度图例 -->
+          <div class="mt-5 flex flex-wrap items-center gap-4 text-xs text-white/70">
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>清凉 <span class="text-white/50">(<%= heatCounts[0] %>)</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>适中 <span class="text-white/50">(<%= heatCounts[1] %>)</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-violet-400"></span>较热 <span class="text-white/50">(<%= heatCounts[2] %>)</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>火热 <span class="text-white/50">(<%= heatCounts[3] %>)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 标签网格 -->
+      <% if (site.tags.size() > 0) { %>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <% site.tags.sort('-length').forEach(function(tag, index){
+          let level = getHeatLevel(tag.length);
+          let style = heatStyles[level];
+        %>
+        <a
+          href="<%= url_for(tag.path) %>"
+          class="tag-card group relative flex flex-col rounded-xl border <%= style.border %> bg-gradient-to-br <%= style.bg %> p-4 hover:shadow-lg <%= style.glow %> hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 overflow-hidden"
+          style="animation-delay: <%= index * 30 %>ms;"
+        >
+          <!-- 悬浮光效 -->
+          <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-white/20 via-transparent to-white/10 pointer-events-none"></div>
+
+          <div class="relative flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2 h-2 rounded-full <%= style.dot %> shrink-0 group-hover:scale-150 transition-transform duration-300"></span>
+              <span class="font-semibold <%= style.text %> truncate"><%= tag.name %></span>
+            </div>
+          </div>
+
+          <div class="relative mt-3 flex items-end justify-between">
+            <span class="text-2xl font-bold <%= style.text %> tabular-nums">
+              <%= tag.length %>
+            </span>
+            <span class="text-xs text-slate-400 dark:text-slate-600">篇文章</span>
+          </div>
+
+          <!-- 底部进度条 -->
+          <div class="relative mt-2 h-1 rounded-full bg-slate-200/50 dark:bg-slate-700/50 overflow-hidden">
+            <div class="h-full rounded-full <%= style.dot %> transition-all duration-500 group-hover:w-full" style="width: <%= maxCount > 0 ? Math.round(tag.length / maxCount * 100) : 100 %>%;"></div>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+      <% } else { %>
+      <div class="text-center py-20 text-slate-400 dark:text-slate-600">
+        <svg class="w-16 h-16 mx-auto mb-4 opacity-40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z" />
+        </svg>
+        <p>暂无标签</p>
+      </div>
+      <% } %>
+    </div>
+
+    <%- partial('_partial/sidebar') %>
+  </div>
 </div>
