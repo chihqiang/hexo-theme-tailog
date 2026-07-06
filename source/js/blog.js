@@ -6,20 +6,42 @@ document.addEventListener("DOMContentLoaded", function () {
   // ---- 代码复制按钮 ----
   // figure.highlight: Hexo 高亮代码块；.article-content > pre: 独立 pre 代码块（直接子元素，避免重复匹配 figure 内部的 pre）
   document.querySelectorAll("figure.highlight, .article-content > pre").forEach(function (el) {
-    const block = el.querySelector("pre") || el;
-    const wrapper = el.tagName === "PRE" ? el : el;
+    // figure.highlight 结构: <figure><table><tr><td class="gutter"><pre>行号</pre></td><td class="code"><pre>代码</pre></td></tr></table></figure>
+    // 必须取 td.code 里的 pre，否则会取到行号
+    let block;
+    if (el.tagName === "FIGURE") {
+      block = el.querySelector("td.code pre") || el.querySelector(".code pre");
+    } else {
+      block = el;
+    }
+    if (!block) return;
+
+    const wrapper = el;
     wrapper.style.position = "relative";
 
     // 避免重复添加
     if (wrapper.querySelector(".copy-btn")) return;
+
+    // 在添加按钮之前提取纯代码文本，避免按钮文字混入
+    let codeText = "";
+    const lines = block.querySelectorAll(".line");
+    if (lines.length > 0) {
+      // Hexo highlight: 每行代码在 <span class="line"> 中
+      codeText = Array.from(lines).map(function (l) { return l.textContent; }).join("\n");
+    } else {
+      // 独立 pre: 代码可能在 <code> 子元素中，或直接在 pre 内
+      const codeEl = block.querySelector("code");
+      codeText = codeEl ? codeEl.textContent : block.textContent;
+    }
+    // 去除尾部空白
+    codeText = codeText.replace(/\n+$/, "");
 
     const btn = document.createElement("button");
     btn.textContent = "复制";
     btn.className = "copy-btn";
 
     btn.addEventListener("click", function () {
-      const code = block.innerText;
-      navigator.clipboard.writeText(code).then(() => {
+      navigator.clipboard.writeText(codeText).then(() => {
         btn.textContent = "已复制";
         setTimeout(() => (btn.textContent = "复制"), 1500);
       });
@@ -278,7 +300,7 @@ function initCodeLangLabel() {
     var label = document.createElement("span");
     label.textContent = lang;
     label.className =
-      "code-lang-label absolute top-2 left-3 text-[10px] font-mono uppercase tracking-wide text-slate-400 dark:text-slate-600 pointer-events-none select-none";
+      "code-lang-label absolute top-2 right-14 text-[10px] font-mono uppercase tracking-wide text-slate-500 dark:text-slate-500 pointer-events-none select-none z-10";
     figure.style.position = "relative";
     figure.appendChild(label);
   });

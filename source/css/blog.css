@@ -316,7 +316,8 @@
   color: #e11d48;
 }
 
-.article-content pre {
+/* 独立 pre 代码块（无 figure 包裹） */
+.article-content > pre {
   background-color: #0f172a;
   color: #e2e8f0;
   padding: 1.25rem;
@@ -325,6 +326,8 @@
   margin: 1.25rem 0;
   font-size: 0.875rem;
   line-height: 1.7;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  white-space: pre;
 }
 
 .article-content pre code {
@@ -345,7 +348,8 @@
 }
 .article-content blockquote p { margin: 0.5rem 0; }
 
-.article-content table {
+/* 文章正文表格（用 > 直接子选择器，避免影响 figure.highlight 内的 table） */
+.article-content > table {
   width: 100%;
   border-collapse: collapse;
   margin: 1.25rem 0;
@@ -354,19 +358,19 @@
   overflow: hidden;
   border: 1px solid #e2e8f0;
 }
-.article-content table th,
-.article-content table td {
+.article-content > table th,
+.article-content > table td {
   padding: 0.625rem 0.875rem;
   border-bottom: 1px solid #e2e8f0;
 }
-.article-content table th {
+.article-content > table th {
   background-color: #f8fafc;
   color: #0f172a;
   font-weight: 600;
   text-align: left;
 }
-.article-content table tr:last-child td { border-bottom: none; }
-.article-content table tr:nth-child(even) td {
+.article-content > table tr:last-child td { border-bottom: none; }
+.article-content > table tr:nth-child(even) td {
   background-color: #f8fafc;
 }
 
@@ -384,32 +388,161 @@
 }
 
 /* ---- Hexo highlight.js 代码块 ---- */
+/* 浅色主题：柔和灰底 + 彩色语法高亮 */
 figure.highlight {
-  background-color: #0f172a;
+  background-color: #f6f8fa;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
   margin: 1.25rem 0;
   position: relative;
 }
+/* 重置 figure 内 table */
+figure.highlight table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  width: 100%;
+  margin: 0;
+}
+figure.highlight tr,
+figure.highlight td {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0;
+  vertical-align: top;
+  background: none !important;
+}
+/* 行号列 */
 figure.highlight .gutter {
-  display: none;
+  display: table-cell;
+  width: 1px; /* 自动收缩到内容宽度 */
+  white-space: nowrap;
+}
+figure.highlight .gutter pre {
+  padding: 1.25rem 0.75rem 1.25rem 1.25rem;
+  margin: 0;
+  text-align: right;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  color: #94a3b8;
+  background-color: transparent;
+  border-right: 1px solid #e2e8f0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* 代码列 */
+figure.highlight .code {
+  width: 100%;
 }
 figure.highlight figcaption {
-  background: rgba(255, 255, 255, 0.05);
+  background: #eef2f7;
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
 }
+/* figure 内 pre 和独立 pre 统一样式 */
 figure.highlight pre,
-.article-content pre {
+.article-content > pre {
   margin: 0;
   padding: 1.25rem;
   overflow-x: auto;
   font-size: 0.875rem;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   line-height: 1.7;
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  color: #24292f;
+  background-color: transparent;
+}
+figure.highlight .code pre {
+  border-radius: 0;
+  padding-left: 1rem;
+}
+/* 独立 pre 代码块（无 figure 包裹） */
+.article-content > pre {
+  background-color: #f6f8fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #24292f;
+}
+/* 去除每行末尾 <br> 产生的多余空行 */
+figure.highlight .code pre > br:last-of-type,
+.article-content > pre > br:last-of-type {
+  display: none;
+}
+/* 代码块中的行高亮 */
+figure.highlight .line.marked {
+  background-color: rgba(99, 102, 241, 0.1);
+  display: block;
+  margin: 0 -1.25rem;
+  padding: 0 1.25rem;
+}
+
+/* ---- 语法高亮配色（浅色主题，GitHub 风格） ---- */
+figure.highlight .keyword,
+figure.highlight .meta,
+figure.highlight .built_in,
+.article-content > pre .keyword,
+.article-content > pre .built_in {
+  color: #cf222e;
+}
+figure.highlight .string,
+figure.highlight .attr,
+.article-content > pre .string {
+  color: #0a3069;
+}
+figure.highlight .comment,
+.article-content > pre .comment {
+  color: #6e7781;
+  font-style: italic;
+}
+figure.highlight .number,
+figure.highlight .literal,
+.article-content > pre .number {
+  color: #0550ae;
+}
+figure.highlight .function .title,
+figure.highlight .title,
+.article-content > pre .title {
+  color: #8250df;
+}
+figure.highlight .variable,
+figure.highlight .params,
+.article-content > pre .variable {
+  color: #953800;
+}
+figure.highlight .type,
+figure.highlight .class .title,
+.article-content > pre .type {
+  color: #953800;
+}
+figure.highlight .tag,
+.article-content > pre .tag {
+  color: #116329;
+}
+figure.highlight .attribute,
+.article-content > pre .attribute {
+  color: #0550ae;
+}
+figure.highlight .symbol,
+figure.highlight .regexp,
+.article-content > pre .symbol {
+  color: #0a3069;
+}
+figure.highlight .property,
+.article-content > pre .property {
+  color: #0550ae;
+}
+figure.highlight .addition {
+  color: #116329;
+  background-color: #dafbe1;
+}
+figure.highlight .deletion {
+  color: #82071e;
+  background-color: #ffebe9;
 }
 
 /* 代码复制按钮 */
@@ -419,22 +552,24 @@ figure.highlight pre,
   right: 0.5rem;
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
   opacity: 0;
   z-index: 10;
+  backdrop-filter: blur(4px);
 }
 figure.highlight:hover .copy-btn,
 pre:hover .copy-btn {
   opacity: 1;
 }
 .copy-btn:hover {
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.2);
+  color: #4f46e5;
+  background: white;
+  border-color: #c7d2fe;
 }
 
 /* ---- 深色模式 ---- */
@@ -527,14 +662,102 @@ pre:hover .copy-btn {
   border-left-color: #6366f1;
   color: #94a3b8;
 }
-.dark .article-content table { border-color: #334155; }
-.dark .article-content table th {
+.dark .article-content > table { border-color: #334155; }
+.dark .article-content > table th {
   background-color: #1e293b;
   color: #f1f5f9;
 }
-.dark .article-content table td { border-bottom-color: #334155; }
-.dark .article-content table tr:nth-child(even) td { background-color: #1e293b; }
+.dark .article-content > table td { border-bottom-color: #334155; }
+.dark .article-content > table tr:nth-child(even) td { background-color: #1e293b; }
 .dark .article-content hr { border-top-color: #334155; }
+
+/* 代码块深色模式 */
+.dark figure.highlight {
+  background-color: #161b22;
+  border-color: #334155;
+}
+.dark figure.highlight figcaption {
+  background: #0d1117;
+  color: #94a3b8;
+  border-bottom-color: #334155;
+}
+.dark figure.highlight .gutter pre {
+  color: #6e7681;
+  border-right-color: #334155;
+}
+.dark figure.highlight pre,
+.dark .article-content > pre {
+  color: #e6edf3;
+  background-color: transparent;
+}
+.dark .article-content > pre {
+  background-color: #161b22;
+  border-color: #334155;
+}
+.dark figure.highlight .code pre {
+  border-radius: 0;
+}
+/* 语法高亮深色模式配色 */
+.dark figure.highlight .keyword,
+.dark figure.highlight .meta,
+.dark figure.highlight .built_in {
+  color: #ff7b72;
+}
+.dark figure.highlight .string,
+.dark figure.highlight .attr {
+  color: #a5d6ff;
+}
+.dark figure.highlight .comment {
+  color: #8b949e;
+}
+.dark figure.highlight .number,
+.dark figure.highlight .literal {
+  color: #79c0ff;
+}
+.dark figure.highlight .function .title,
+.dark figure.highlight .title {
+  color: #d2a8ff;
+}
+.dark figure.highlight .variable,
+.dark figure.highlight .params {
+  color: #ffa657;
+}
+.dark figure.highlight .type,
+.dark figure.highlight .class .title {
+  color: #ffa657;
+}
+.dark figure.highlight .tag {
+  color: #7ee787;
+}
+.dark figure.highlight .attribute {
+  color: #79c0ff;
+}
+.dark figure.highlight .symbol,
+.dark figure.highlight .regexp {
+  color: #a5d6ff;
+}
+.dark figure.highlight .property {
+  color: #79c0ff;
+}
+.dark figure.highlight .addition {
+  color: #7ee787;
+  background-color: rgba(46, 160, 67, 0.15);
+}
+.dark figure.highlight .deletion {
+  color: #ffa198;
+  background-color: rgba(248, 81, 73, 0.15);
+}
+/* 深色模式复制按钮 */
+.dark .copy-btn {
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #334155;
+}
+.dark .copy-btn:hover {
+  color: #818cf8;
+  background: #1e293b;
+  border-color: rgba(99, 102, 241, 0.5);
+}
 
 /* ---- TOC 目录 ---- */
 .toc-nav {
@@ -572,13 +795,13 @@ pre:hover .copy-btn {
   .article-content h3 { font-size: 1.15rem; }
 
   figure.highlight pre,
-  .article-content pre {
+  .article-content > pre {
     font-size: 0.8rem;
     padding: 1rem;
     -webkit-overflow-scrolling: touch;
   }
 
-  .article-content table {
+  .article-content > table {
     font-size: 0.875rem;
     display: block;
     overflow-x: auto;
