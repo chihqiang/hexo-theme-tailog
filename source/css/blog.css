@@ -398,11 +398,14 @@ figure.highlight {
   position: relative;
 }
 /* 重置 figure 内 table */
+/* 关键：fixed 布局让表格宽度只由容器决定，
+   否则超长代码行会把表格（进而整个卡片）撑宽，被 overflow:hidden 裁掉 */
 figure.highlight table {
   border-collapse: collapse !important;
   border-spacing: 0 !important;
   border: none !important;
   border-radius: 0 !important;
+  table-layout: fixed;
   width: 100%;
   margin: 0;
 }
@@ -414,14 +417,14 @@ figure.highlight td {
   vertical-align: top;
   background: none !important;
 }
-/* 行号列 */
+/* 行号列（fixed 布局下必须给出确定宽度） */
 figure.highlight .gutter {
   display: table-cell;
-  width: 1px; /* 自动收缩到内容宽度 */
+  width: 3.5rem;
   white-space: nowrap;
 }
 figure.highlight .gutter pre {
-  padding: 1.25rem 0.75rem 1.25rem 1.25rem;
+  padding: 1.25rem 0.5rem 1.25rem 0.75rem;
   margin: 0;
   text-align: right;
   font-size: 0.875rem;
@@ -433,9 +436,9 @@ figure.highlight .gutter pre {
   user-select: none;
   -webkit-user-select: none;
 }
-/* 代码列 */
+/* 代码列：宽度自适应（取行号列之外的剩余空间），内容超出时由内部 pre 滚动 */
 figure.highlight .code {
-  width: 100%;
+  width: auto;
 }
 figure.highlight figcaption {
   background: #eef2f7;
@@ -460,6 +463,10 @@ figure.highlight pre,
 figure.highlight .code pre {
   border-radius: 0;
   padding-left: 1rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 /* 独立 pre 代码块（无 figure 包裹） */
 .article-content > pre {
