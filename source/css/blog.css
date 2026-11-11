@@ -381,6 +381,14 @@
   margin: 1.25rem 0;
 }
 
+/* Tailwind preflight 会把 img 设为 block，导致 shields.io 徽章逐行堆叠 */
+.article-content a > img[src*="img.shields.io"] {
+  display: inline-block;
+  margin: 0.25rem 0.35rem 0.25rem 0;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
 .article-content hr {
   border: none;
   border-top: 1px solid #e2e8f0;
