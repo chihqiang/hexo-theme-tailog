@@ -6,19 +6,19 @@
 %>
 <% if (page.current === 1 && is_home()) { %>
   <!-- 首页 Hero 区域 -->
-  <section class="mb-10 sm:mb-12 fade-up">
+  <section class="hero-section mb-10 sm:mb-12 fade-up">
     <div class="flex items-center gap-2 mb-3">
       <span class="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
       <span class="text-sm font-medium text-slate-500 dark:text-slate-400">
         <%= conf('subtitle') || conf('description') %>
       </span>
     </div>
-    <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+    <h1 class="hero-title text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
       最新文章
     </h1>
 
     <!-- 统计数据 -->
-    <div class="mt-5 flex flex-wrap gap-4 sm:gap-6">
+    <div class="hero-stats mt-5 flex flex-wrap gap-4 sm:gap-6">
       <div class="flex items-center gap-2">
         <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 tabular-nums"><%= totalPosts %></span>
         <span class="text-sm text-slate-400 dark:text-slate-500">篇文章</span>
